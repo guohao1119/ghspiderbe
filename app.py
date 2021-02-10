@@ -1,9 +1,12 @@
 import json
+import os
 import urllib.error  # 指定URL，获取网页数据
 import urllib.request
 import re  # 正则表达式
 from bs4 import BeautifulSoup
-from flask import Flask
+from flask import Flask, request, Response, make_response, send_from_directory
+
+from infosearch import search_zxgk
 
 app = Flask(__name__)
 
@@ -21,7 +24,8 @@ def movielist():
     for item in html.find_all('li', class_='list-item'):
         datalist.append({
             'title': item.get('data-title'),
-            'rate': item.get('data-score')
+            'rate': item.get('data-score'),
+            'poster': item.find('img').get('src')
         })
     result = {'data': datalist}
     return result
@@ -61,7 +65,6 @@ def weibolist():
     html = getRawHtml('https://s.weibo.com/top/summary?Refer=top_hot&topnav=1&wvr=6')
     datalist = []
     for item in html.find_all('tr', class_=''):
-        print(item)
         title = item.find('td', class_='td-02').find('a')
         rate = item.find('td', class_='td-03').find('i')
         if title:
@@ -156,6 +159,40 @@ def postRawData(url):
 #     if len(info) > 0:
 #         return info[0]
 #     return ''
+
+
+# 信息查询接口
+@app.route('/info_search')
+def info_search():
+    company_name = request.args.get('companyName')
+    print(company_name)
+    return search_zxgk(company_name)
+
+
+@app.route('/download')
+def download():
+    # file_path = os.path.curdir + '/result/' + request.values.get('filepath') + '.png'
+    # filename = os.path.basename(file_path)
+    # response = Response(file_iterator(file_path))
+    # response.headers['Content-Type'] = 'application/octet-stream'
+    # response.headers["Content-Disposition"] = 'attachment;filename="{}"'.format(filename)
+    # return response
+    directory = os.getcwd() + '/result/'  # 假设在当前目录
+    filename = request.values.get('filepath') + '.png'
+    response = make_response(
+        send_from_directory(directory, filename.encode('utf-8').decode('utf-8'), as_attachment=True))
+    response.headers["Content-Disposition"] = "attachment; filename={}".format(filename.encode().decode('latin-1'))
+    return response
+
+
+def file_iterator(file_path, chunk_size=512):
+    with open(file_path, 'rb') as target_file:
+        while True:
+            chunk = target_file.read(chunk_size)
+            if chunk:
+                yield chunk
+            else:
+                break
 
 
 if __name__ == '__main__':
