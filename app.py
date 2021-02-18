@@ -6,7 +6,7 @@ import re  # 正则表达式
 from bs4 import BeautifulSoup
 from flask import Flask, request, Response, make_response, send_from_directory
 
-from infosearch import search_zxgk, search_credit_china, search_gsxt, search_china_tax, search_mem, search_mee, search_miit, search_safe, search_cbirc, search_pbc, search_ndrc, search_nmpa, search_csrc
+from infosearch import search_zxgk, search_credit_china, search_gsxt, search_china_tax, search_mem, search_mee, search_miit, search_safe, search_cbirc, search_pbc, search_ndrc, search_nmpa, search_csrc, search_stats, search_mofcom, search_samr, search_ccgp, search_moa, search_customs, search_mohurd, search_mof
 
 app = Flask(__name__)
 
@@ -15,20 +15,37 @@ app = Flask(__name__)
 @app.route('/info_search')
 def info_search():
     company_name = request.args.get('companyName')
-    print(company_name)
     # return search_zxgk(company_name)
     # return search_credit_china(company_name)
     # return search_gsxt(company_name)
-    # return search_china_tax(company_name)
-    # return search_mem(company_name)
-    return search_mee(company_name)
-    # return search_miit(company_name)
-    return search_safe(company_name)
-    return search_cbirc(company_name)
-    return search_pbc(company_name)
-    return search_ndrc(company_name)
-    return search_nmpa(company_name)
-    return search_csrc(company_name)
+    # return search_nmpa(company_name)
+    # return search_customs(company_name)
+    # return search_credit(company_name)
+
+    # file_name_arr = [search_china_tax(company_name)]
+
+    file_name_arr = [
+        search_mem(company_name),
+        search_mee(company_name),
+        search_mee(company_name),
+        search_miit(company_name),
+        search_safe(company_name),
+        search_cbirc(company_name),
+        search_pbc(company_name),
+        search_ndrc(company_name),
+        search_csrc(company_name),
+        search_stats(company_name),
+        search_mofcom(company_name),
+        search_samr(company_name),
+        search_ccgp(company_name),
+        search_moa(company_name),
+        search_mohurd(company_name),
+        search_mof(company_name)
+    ]
+    return {
+        'code': 0,
+        'data': file_name_arr
+    }
 
 
 @app.route('/')
@@ -183,18 +200,9 @@ def postRawData(url):
 
 @app.route('/download')
 def download():
-    # file_path = os.path.curdir + '/result/' + request.values.get('filepath') + '.png'
-    # filename = os.path.basename(file_path)
-    # response = Response(file_iterator(file_path))
-    # response.headers['Content-Type'] = 'application/octet-stream'
-    # response.headers["Content-Disposition"] = 'attachment;filename="{}"'.format(filename)
-    # return response
     directory = os.getcwd() + '/result/'  # 假设在当前目录
     filename = request.values.get('filepath') + '.png'
-    response = make_response(
-        send_from_directory(directory, filename.encode('utf-8').decode('utf-8'), as_attachment=True))
-    response.headers["Content-Disposition"] = "attachment; filename={}".format(filename.encode().decode('latin-1'))
-    return response
+    return send_from_directory(directory, filename, as_attachment=True)
 
 
 def file_iterator(file_path, chunk_size=512):
