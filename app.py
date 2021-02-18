@@ -2,11 +2,12 @@ import json
 import os
 import urllib.error  # 指定URL，获取网页数据
 import urllib.request
+import threading
 import re  # 正则表达式
 from bs4 import BeautifulSoup
 from flask import Flask, request, Response, make_response, send_from_directory
 
-from infosearch import search_zxgk, search_credit_china, search_gsxt, search_china_tax, search_mem, search_mee, search_miit, search_safe, search_cbirc, search_pbc, search_ndrc, search_nmpa, search_csrc, search_stats, search_mofcom, search_samr, search_ccgp, search_moa, search_customs, search_mohurd, search_mof
+from infosearch import search_zxgk, search_credit_china, search_gsxt, search_china_tax, search_mem, search_mee, search_miit, search_safe, search_cbirc, search_pbc, search_ndrc, search_nmpa, search_csrc, search_stats, search_mofcom, search_samr, search_ccgp, search_moa, search_customs, search_mohurd, search_mof, get_browser
 
 app = Flask(__name__)
 
@@ -15,33 +16,43 @@ app = Flask(__name__)
 @app.route('/info_search')
 def info_search():
     company_name = request.args.get('companyName')
-    # return search_zxgk(company_name)
-    # return search_credit_china(company_name)
-    # return search_gsxt(company_name)
-    # return search_nmpa(company_name)
-    # return search_customs(company_name)
-    # return search_credit(company_name)
-
-    # file_name_arr = [search_china_tax(company_name)]
-
-    file_name_arr = [
-        search_mem(company_name),
-        search_mee(company_name),
-        search_mee(company_name),
-        search_miit(company_name),
-        search_safe(company_name),
-        search_cbirc(company_name),
-        search_pbc(company_name),
-        search_ndrc(company_name),
-        search_csrc(company_name),
-        search_stats(company_name),
-        search_mofcom(company_name),
-        search_samr(company_name),
-        search_ccgp(company_name),
-        search_moa(company_name),
-        search_mohurd(company_name),
-        search_mof(company_name)
+    search_arr = [
+        # search_china_tax,
+        # search_pbc,
+        # return search_zxgk(company_name)
+        # return search_credit_china(company_name)
+        # return search_gsxt(company_name)
+        # return search_nmpa(company_name)
+        # return search_customs(company_name)
+        # return search_credit(company_name)
+        search_mem,
+        search_mee,
+        search_miit,
+        search_safe,
+        search_cbirc,
+        search_ndrc,
+        search_csrc,
+        search_stats,
+        search_mofcom,
+        search_samr,
+        search_ccgp,
+        search_moa,
+        search_mohurd,
+        search_mof
     ]
+    threads = []
+    file_name_arr = []
+
+    for item in search_arr:
+        threads.append(threading.Thread(target=item, args=(company_name, file_name_arr)))
+
+    threads_count = range(len(threads))
+    for index in threads_count:
+        threads[index].start()
+    for index in threads_count:
+        threads[index].join()
+    print('线程执行结束')
+
     return {
         'code': 0,
         'data': file_name_arr

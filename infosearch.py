@@ -11,7 +11,6 @@ from ImageHandle import handleImage
 system = platform.system()
 chrome_options = webdriver.ChromeOptions()
 chrome_options.headless = True
-# chrome_options.add_argument('--headless')
 # chrome_options.add_argument('lang=zh_CN.UTF-8')
 # chrome_options.add_argument('Referer=https://www.nmpa.gov.cn1/')
 # chrome_options.add_argument('sec-ch-ua="Chromium";v="88", "Google Chrome";v="88", ";Not A Brand";v="99"')
@@ -89,7 +88,7 @@ def search_gsxt(company_name):
 
 
 # 查询国家税务总局 http://www.chinatax.gov.cn/s
-def search_china_tax(company_name):
+def search_china_tax(company_name, file_name_arr):
     browser = get_browser()
     browser.get('http://www.chinatax.gov.cn/s')
 
@@ -101,31 +100,35 @@ def search_china_tax(company_name):
     btn_query.click()
     file_name = '国家税务总局网站查询结果'
     browser.save_screenshot('./result/' + file_name + '.png')
-    return file_name
+    file_name_arr.append(file_name)
 
 
 # 查询应急管理部网站 http://www.mem.gov.cn
-def search_mem(company_name):
+def search_mem(company_name, file_name_arr):
+    print('线程1开启')
     browser = get_browser()
     website = 'https://www.mem.gov.cn/was5/web/sousuo/index.html?sw='
     website = website + company_name + '&date1=&date2=&stype=0'
     browser.get(website)
     file_name = '应急管理部网站查询结果'
     browser.save_screenshot('./result/' + file_name + '.png')
-    return file_name
+    file_name_arr.append(file_name)
+    # return file_name
 
 
 # 中华人民共和国生态环境部网站 http://www.mee.gov.cn
-def search_mee(company_name):
+def search_mee(company_name, file_name_arr):
+    print('线程2开启')
     browser = get_browser()
     browser.get('http://www.mee.gov.cn/qwjs2019/?searchword=' + company_name)
     file_name = '生态环境部网站查询结果'
     browser.save_screenshot('./result/' + file_name + '.png')
-    return file_name
+    file_name_arr.append(file_name)
 
 
 # 中华人民共和国工业和信息化部网站（http://www.miit.gov.cn）
-def search_miit(company_name):
+def search_miit(company_name, file_name_arr):
+    print('线程3开启')
     browser = get_browser()
     locator = (By.CLASS_NAME, 'yyfw')
     try:
@@ -134,31 +137,32 @@ def search_miit(company_name):
         WebDriverWait(browser, 10).until(EC.presence_of_element_located(locator))
         file_name = '工业和信息化部网站查询结果'
         browser.save_screenshot('./result/' + file_name + '.png')
+        file_name_arr.append(file_name)
     except Exception as e:
         print(e)
-    return file_name
 
 
 # 国家外汇管理局网站（http://www.safe.gov.cn）
-def search_safe(company_name):
+def search_safe(company_name, file_name_arr):
+    print('线程4开启')
     browser = get_browser()
     browser.get('http://www.safe.gov.cn/safe/search/index.html?q=' + company_name + '&siteid=safe&order=releasetime')
     file_name = '国家外汇管理局网站查询结果'
     browser.save_screenshot('./result/' + file_name + '.png')
-    return file_name
+    file_name_arr.append(file_name)
 
 
 # 中国银保监会网站（http://www.cbirc.gov.cn）
-def search_cbirc(company_name):
+def search_cbirc(company_name, file_name_arr):
     browser = get_browser()
     browser.get('http://www.cbirc.gov.cn/cn/view/pages/index/jiansuo.html?keyWords=' + company_name)
     file_name = '中国银保监会网站查询结果'
     browser.save_screenshot('./result/' + file_name + '.png')
-    return file_name
+    file_name_arr.append(file_name)
 
 
 # 中国人民银行网站（http://www.pbc.gov.cn）
-def search_pbc(company_name):
+def search_pbc(company_name, file_name_arr):
     browser = get_browser()
     browser.get('http://wzdig.pbc.gov.cn:8080/search/pcRender?pageId=fa445f64514c40c68b1c8ffe859c649e')
     # 公司名称输入框
@@ -169,20 +173,20 @@ def search_pbc(company_name):
     query_btn.click()
     file_name = '中国人民银行网站查询结果'
     browser.save_screenshot('./result/' + file_name + '.png')
-    return file_name
+    file_name_arr.append(file_name)
 
 
 # 国家发改委网站（https://www.ndrc.gov.cn）
-def search_ndrc(company_name):
+def search_ndrc(company_name, file_name_arr):
     browser = get_browser()
     browser.get('https://so.ndrc.gov.cn/s?siteCode=bm04000007&ssl=1&token=&qt=' + company_name)
     file_name = '国家发改委网站查询结果'
     browser.save_screenshot('./result/' + file_name + '.png')
-    return file_name
+    file_name_arr.append(file_name)
 
 
 # 中国证监会网站（http://www.csrc.gov.cn/pub/newsite）
-def search_csrc(company_name):
+def search_csrc(company_name, file_name_arr):
     browser = get_browser()
     browser.get('http://www.csrc.gov.cn/pub/newsite/')
     # 公司名称输入框
@@ -194,11 +198,11 @@ def search_csrc(company_name):
     query_btn.click()
     file_name = '中国证监会网站查询结果'
     browser.save_screenshot('./result/' + file_name + '.png')
-    return file_name
+    file_name_arr.append(file_name)
 
 
 # 国家食品药品监督管理总局网站（http://www.nmpa.gov.cn）
-def search_nmpa(company_name):
+def search_nmpa(company_name, file_name_arr):
     browser = get_browser()
     browser.get('http://www.nmpa.gov.cn')
     # 公司名称输入框
@@ -209,11 +213,11 @@ def search_nmpa(company_name):
     query_btn.click()
     file_name = '国家食品药品监督管理总局网站查询结果'
     browser.save_screenshot('./result/' + file_name + '.png')
-    return file_name
+    file_name_arr.append(file_name)
 
 
 # 中华人民共和国国家统计局网站（http://www.stats.gov.cn）
-def search_stats(company_name):
+def search_stats(company_name, file_name_arr):
     browser = get_browser()
     browser.get('http://www.stats.gov.cn/was5/web/search?channelid=288041&andsen=' + company_name)
     # 公司名称输入框
@@ -221,11 +225,11 @@ def search_stats(company_name):
     search_word.send_keys(company_name)
     file_name = '国家统计局网站查询结果'
     browser.save_screenshot('./result/' + file_name + '.png')
-    return file_name
+    file_name_arr.append(file_name)
 
 
 # 中华人民共和国商务部网站（http://www.mofcom.gov.cn）
-def search_mofcom(company_name):
+def search_mofcom(company_name, file_name_arr):
     browser = get_browser()
     try:
         browser.get('http://search.mofcom.gov.cn/swb/swb_search/searchList_main.jsp')
@@ -243,41 +247,41 @@ def search_mofcom(company_name):
         browser.save_screenshot('./result/' + file_name + '.png')
     except Exception as e:
         print(e)
-    return file_name
+    file_name_arr.append(file_name)
 
 
 # 国家市场监督管理总局（http://www.samr.gov.cn）
-def search_samr(company_name):
+def search_samr(company_name, file_name_arr):
     browser = get_browser()
     browser.get('http://www.samr.gov.cn/search4/s?searchWord=' + company_name + '&x=12&y=10&column=全部&siteCode=bm30000012')
     file_name = '市场监督管理总局网站查询结果'
     browser.save_screenshot('./result/' + file_name + '.png')
-    return file_name
+    file_name_arr.append(file_name)
 
 
 # 中国政府采购网（http://www.ccgp.gov.cn）
-def search_ccgp(company_name):
+def search_ccgp(company_name, file_name_arr):
     browser = get_browser()
     website = 'http://search.ccgp.gov.cn/bxsearch?searchtype=1&page_index=1&timeType=2&searchchannel=0&kw='
     browser.get(website + company_name + '&bidSort=0&pinMu=0&bidType=0')
     file_name = '中国政府采购网站查询结果'
     browser.save_screenshot('./result/' + file_name + '.png')
-    return file_name
+    file_name_arr.append(file_name)
 
 
 # 中华人民共和国农业农村部网站（http://www.moa.gov.cn/）
-def search_moa(company_name):
+def search_moa(company_name, file_name_arr):
     browser = get_browser()
     website = 'http://www.moa.gov.cn/was5/web/search?searchword='
     browser.get(website + company_name + '&channelid=233424&prepage=10&orderby=-DOCRELTIME')
     browser.save_screenshot('./result/.png')
     file_name = '农业农村部网站查询结果'
     browser.save_screenshot('./result/' + file_name + '.png')
-    return file_name
+    file_name_arr.append(file_name)
 
 
 # 中华人民共和国海关总署网站（http://www.customs.gov.cn/）
-def search_customs(company_name):
+def search_customs(company_name, file_name_arr):
     browser = get_browser()
     browser.get('http://search.customs.gov.cn/search/pcRender?pageId=f5261418ddc74f03b27e3590c531102b')
     # 公司名称输入框
@@ -288,11 +292,11 @@ def search_customs(company_name):
     query_btn.click()
     file_name = '海关总署网站查询结果'
     browser.save_screenshot('./result/' + file_name + '.png')
-    return file_name
+    file_name_arr.append(file_name)
 
 
 # 中华人民共和国住房和城乡建设部网站（http://www.mohurd.gov.cn/）
-def search_mohurd(company_name):
+def search_mohurd(company_name, file_name_arr):
     browser = get_browser()
     try:
         browser.get('http://search.mohurd.gov.cn')
@@ -309,11 +313,11 @@ def search_mohurd(company_name):
         browser.save_screenshot('./result/' + file_name + '.png')
     except Exception as e:
         print(e)
-    return file_name
+    file_name_arr.append(file_name)
 
 
 # 中国海关企业进出口信用信息公示平台（http://credit.customs.gov.cn/）
-def search_credit(company_name):
+def search_credit(company_name, file_name_arr):
     browser = get_browser()
     browser.get('http://credit.customs.gov.cn/')
     # 公司名称输入框
@@ -324,11 +328,11 @@ def search_credit(company_name):
     query_btn.click()
     file_name = '海关企业进出口信用信息公示平台网站查询结果'
     browser.save_screenshot('./result/' + file_name + '.png')
-    return file_name
+    file_name_arr.append(file_name)
 
 
 # 中华人民共和国财政部网站（http://www.mof.gov.cn/index.htm）
-def search_mof(company_name):
+def search_mof(company_name, file_name_arr):
     browser = get_browser()
     browser.get('http://www.mof.gov.cn/index.htm')
     # 公司名称输入框
@@ -341,12 +345,11 @@ def search_mof(company_name):
     browser.switch_to.window(browser.window_handles[1])
     file_name = '财政部网站查询结果'
     browser.save_screenshot('./result/' + file_name + '.png')
-    return file_name
+    file_name_arr.append(file_name)
 
 
 # 根据不同操作系统获取浏览器
 def get_browser():
-    print(chrome_options)
     if system == 'Windows':
         browser = webdriver.Chrome(chrome_options=chrome_options)
     elif system == 'Darwin':
