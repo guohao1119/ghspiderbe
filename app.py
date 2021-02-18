@@ -6,9 +6,29 @@ import re  # 正则表达式
 from bs4 import BeautifulSoup
 from flask import Flask, request, Response, make_response, send_from_directory
 
-from infosearch import search_zxgk
+from infosearch import search_zxgk, search_credit_china, search_gsxt, search_china_tax, search_mem, search_mee, search_miit, search_safe, search_cbirc, search_pbc, search_ndrc, search_nmpa, search_csrc
 
 app = Flask(__name__)
+
+
+# 信息查询接口
+@app.route('/info_search')
+def info_search():
+    company_name = request.args.get('companyName')
+    print(company_name)
+    # return search_zxgk(company_name)
+    # return search_credit_china(company_name)
+    # return search_gsxt(company_name)
+    # return search_china_tax(company_name)
+    # return search_mem(company_name)
+    return search_mee(company_name)
+    # return search_miit(company_name)
+    return search_safe(company_name)
+    return search_cbirc(company_name)
+    return search_pbc(company_name)
+    return search_ndrc(company_name)
+    return search_nmpa(company_name)
+    return search_csrc(company_name)
 
 
 @app.route('/')
@@ -161,14 +181,6 @@ def postRawData(url):
 #     return ''
 
 
-# 信息查询接口
-@app.route('/info_search')
-def info_search():
-    company_name = request.args.get('companyName')
-    print(company_name)
-    return search_zxgk(company_name)
-
-
 @app.route('/download')
 def download():
     # file_path = os.path.curdir + '/result/' + request.values.get('filepath') + '.png'
@@ -196,4 +208,4 @@ def file_iterator(file_path, chunk_size=512):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
