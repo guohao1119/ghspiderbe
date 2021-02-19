@@ -17,28 +17,29 @@ app = Flask(__name__)
 def info_search():
     company_name = request.args.get('companyName')
     search_arr = [
-        # search_china_tax,
-        # search_pbc,
         # return search_zxgk(company_name)
-        # return search_credit_china(company_name)
         # return search_gsxt(company_name)
         # return search_nmpa(company_name)
         # return search_customs(company_name)
         # return search_credit(company_name)
+
+        # search_credit_china
+        search_pbc,
         search_mem,
-        search_mee,
-        search_miit,
-        search_safe,
-        search_cbirc,
-        search_ndrc,
-        search_csrc,
-        search_stats,
-        search_mofcom,
-        search_samr,
-        search_ccgp,
-        search_moa,
-        search_mohurd,
-        search_mof
+        # search_mee,
+        # search_miit,
+        # search_safe,
+        # search_cbirc,
+        # search_ndrc,
+        # search_csrc,
+        # search_stats,
+        # search_mofcom,
+        # search_samr,
+        # search_ccgp,
+        # search_moa,
+        # search_mohurd,
+        # search_mof,
+        # search_china_tax
     ]
     threads = []
     file_name_arr = []
