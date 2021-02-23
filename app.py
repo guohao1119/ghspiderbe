@@ -1,13 +1,10 @@
 import json
 import os
-import urllib.error  # 指定URL，获取网页数据
-import urllib.request
 import threading
-import re  # 正则表达式
-from bs4 import BeautifulSoup
-from flask import Flask, request, Response, make_response, send_from_directory
+from flask import Flask, request, send_from_directory, send_file
 
-from infosearch import search_zxgk, search_credit_china, search_gsxt, search_china_tax, search_mem, search_mee, search_miit, search_safe, search_cbirc, search_pbc, search_ndrc, search_nmpa, search_csrc, search_stats, search_mofcom, search_samr, search_ccgp, search_moa, search_customs, search_mohurd, search_mof, get_browser
+from utils.infosearch import search_zxgk, search_credit_china, search_gsxt, search_china_tax, search_mem, search_mee, search_miit, search_safe, search_cbirc, search_pbc, search_ndrc, search_nmpa, search_csrc, search_stats, search_mofcom, search_samr, search_ccgp, search_moa, search_customs, search_mohurd, search_mof, get_browser
+from utils.utils import zip_dir, getRawHtml, postRawData, getRawData, del_file
 
 app = Flask(__name__)
 
@@ -15,45 +12,48 @@ app = Flask(__name__)
 # 信息查询接口
 @app.route('/info_search')
 def info_search():
+    del_file('result')
     company_name = request.args.get('companyName')
-    search_arr = [
-        # return search_zxgk(company_name)
-        # return search_gsxt(company_name)
-        # return search_nmpa(company_name)
-        # return search_customs(company_name)
-        # return search_credit(company_name)
-
-        # search_credit_china
-        search_pbc,
-        search_mem,
-        # search_mee,
-        # search_miit,
-        # search_safe,
-        # search_cbirc,
-        # search_ndrc,
-        # search_csrc,
-        # search_stats,
-        # search_mofcom,
-        # search_samr,
-        # search_ccgp,
-        # search_moa,
-        # search_mohurd,
-        # search_mof,
-        # search_china_tax
-    ]
-    threads = []
     file_name_arr = []
-
-    for item in search_arr:
-        threads.append(threading.Thread(target=item, args=(company_name, file_name_arr)))
-
-    threads_count = range(len(threads))
-    for index in threads_count:
-        threads[index].start()
-    for index in threads_count:
-        threads[index].join()
-    print('线程执行结束')
-
+    search_credit_china(company_name, file_name_arr)
+    # search_arr = [
+    #     # return search_zxgk(company_name)
+    #     # return search_gsxt(company_name)
+    #     # return search_nmpa(company_name)
+    #     # return search_customs(company_name)
+    #     # return search_credit(company_name)
+    #
+    #     search_credit_china
+    #     # search_pbc,
+    #     # search_mem,
+    #     # search_mee,
+    #     # search_miit,
+    #     # search_safe,
+    #     # search_cbirc,
+    #     # search_ndrc,
+    #     # search_csrc,
+    #     # search_stats,
+    #     # search_mofcom,
+    #     # search_samr,
+    #     # search_ccgp,
+    #     # search_moa,
+    #     # search_mohurd,
+    #     # search_mof,
+    #     # search_china_tax
+    # ]
+    # threads = []
+    # file_name_arr = []
+    #
+    # for item in search_arr:
+    #     threads.append(threading.Thread(target=item, args=(company_name, file_name_arr)))
+    #
+    # threads_count = range(len(threads))
+    # for index in threads_count:
+    #     threads[index].start()
+    # for index in threads_count:
+    #     threads[index].join()
+    # print('线程执行结束')
+    # zip_dir('/result', os.getcwd() + '/zip/all.zip')
     return {
         'code': 0,
         'data': file_name_arr
@@ -153,78 +153,16 @@ def juejinlist():
     return {'data': datalist}
 
 
-# 获取网页html源码
-def getRawHtml(url):
-    head = {  # 模拟代理
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
-                      'Chrome/87.0.4280.88 Safari/537.36 '
-    }
-    request = urllib.request.Request(url, headers=head)
-
-    html = ''
-    try:
-        response = urllib.request.urlopen(request)
-        html = response.read().decode('utf-8')
-        html = BeautifulSoup(html, 'html.parser')
-    except urllib.error.URLError as e:
-        if hasattr(e, 'code'):
-            print(e.code)
-        if hasattr(e, 'reason'):
-            print(e.reason)
-    return html
-
-
-# 如果第三方页面是通过接口获取数据，则直接请求接口, get请求
-def getRawData(url):
-    head = {  # 模拟代理
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
-                      'Chrome/87.0.4280.88 Safari/537.36 '
-    }
-    request = urllib.request.Request(url, headers=head)
-    response = urllib.request.urlopen(request)
-    html = response.read().decode('utf-8')
-    return html
-
-
-# 如果第三方页面是通过接口获取数据，则直接请求接口, post请求
-def postRawData(url):
-    head = {  # 模拟代理
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
-                      'Chrome/87.0.4280.88 Safari/537.36 '
-    }
-    data = {
-        'a': '1'
-    }
-    data = json.dumps(data)
-    data = bytes(data, 'utf8')
-    request = urllib.request.Request(url, data=data, headers=head, method='POST')
-    response = urllib.request.urlopen(request)
-    html = response.read().decode('utf-8')
-    return html
-
-# 根据指定正则获取数据
-# def findData(exp, data):
-#     info = re.findall(exp, data)
-#     if len(info) > 0:
-#         return info[0]
-#     return ''
-
-
 @app.route('/download')
 def download():
-    directory = os.getcwd() + '/result/'  # 假设在当前目录
-    filename = request.values.get('filepath') + '.png'
+    directory = os.getcwd()
+    filename = request.values.get('filepath')
     return send_from_directory(directory, filename, as_attachment=True)
 
 
-def file_iterator(file_path, chunk_size=512):
-    with open(file_path, 'rb') as target_file:
-        while True:
-            chunk = target_file.read(chunk_size)
-            if chunk:
-                yield chunk
-            else:
-                break
+@app.route('/download_zip')
+def download_zip():
+    return send_file('zip/all.zip', mimetype='zip', attachment_filename='all.zip', as_attachment=True)
 
 
 if __name__ == '__main__':

@@ -1,3 +1,4 @@
+import json
 import platform
 import time
 
@@ -8,10 +9,12 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from PIL import Image
 from ImageHandle import handleImage
+from utils.utils import getRawData
 
 system = platform.system()
 chrome_options = webdriver.ChromeOptions()
-chrome_options.headless = True
+# chrome_options.headless = True
+# chrome_options.add_argument('1=1')
 # chrome_options.add_argument('lang=zh_CN.UTF-8')
 # chrome_options.add_argument('Referer=https://www.nmpa.gov.cn1/')
 # chrome_options.add_argument('sec-ch-ua="Chromium";v="88", "Google Chrome";v="88", ";Not A Brand";v="99"')
@@ -67,8 +70,16 @@ def get_check_code(browser, captcha_img):
 def search_credit_china(company_name, file_name_arr):
     start = time.time()
     print('线程20开启')
-    browser = get_browser()
-    browser.get('https://www.creditchina.gov.cn/xinyongxinxi/index.html?index=0&scenes=defaultScenario&tableName=credit_xyzx_tyshxydm&searchState=2&entityType=1,2,4,5,6,7,8&keyword=' + company_name)
+    # browser = get_browser()
+    # browser.get('https://www.creditchina.gov.cn/xinyongxinxi/index.html?index=0&scenes=defaultScenario&tableName=credit_xyzx_tyshxydm&searchState=2&entityType=1,2,4,5,6,7,8&keyword=' + company_name)
+    website = 'https://public.creditchina.gov.cn/private-api/catalogSearchHome?keyword='
+    params = '&scenes=defaultScenario&tableName=credit_xyzx_tyshxydm&searchState=2&entityType=1,2,4,5,6,7,8&templateId=&page=1&pageSize=999'
+    raw_data = getRawData(website + company_name + params)
+    raw_data = json.loads(raw_data)
+    data_list = raw_data['data']['list']
+    for item in data_list:
+        print(item)
+
     # 公司名称输入框
     # search_input = browser.find_element_by_id('search_input')
     # search_input.send_keys(company_name)
